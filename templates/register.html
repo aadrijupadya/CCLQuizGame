@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup Form</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}" />
+</head>
+<body>
+        <div class = "sidebar">
+            <img  src = "static/css/images/leaf.avif">
+            <div class = "odin">
+                <img id="sidebar-image" src = "static/css/images/ccl_logo.png">
+            </div>
+        </div>
+        <div class = "form-content">
+            <div class = "top-text">
+                <p>Sign up <i>now</i> to get started. </p> 
+                <p></p>
+            </div>
+            <div class = "middle-text">
+
+                <form action="" method="post">
+                    <div class = "white">
+                    <p class = "form-header">Let's do this!</p>
+
+                    <div class = "columns">
+                        <div class = "column-one">
+                            <label for="first_name">First Name*</label>
+                            <input type="text" id="first_name" name="first_name" placeholder="John" value=""> 
+                            
+                            <label for="email">Email*</label>
+                            <input type="email" id="email" name="email" placeholder="johnsmith@gmail.com" value=""> 
+                            
+                            <label for="password">Password*</label>
+                            <input type="password" id="password"
+                            title="Password must contain min.8 characters: letters, digits and special characters."
+                            placeholder="********" name="password"
+                            pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$" required
+                            autocomplete="off" minlength="8">
+                        </div>
+                        
+                        <div class = "column-two">
+                            <label for="last_name">Last Name*</label>
+                            <input type="text" id="last_name" name="last_name" placeholder="Smith" value=""> 
+                            
+                            <label for="phone_number">Phone Number*</label>
+                            <input id="phone_number" name="phone_number" placeholder="123-456-7890" pattern="^[0-9]{9}$" value=""> 
+                            
+                            <label for="phone_number">Confirm Password*</label>
+                            <input type="password" id="password_validation"
+                            pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$"
+                            title="Password must contain min.8 characters: letters, digits and special characters."
+                            placeholder="********" required autocomplete="off">
+                            <!-- <p class="input-error">Passwords don't match.</p> -->
+                        </div>
+                    </div>
+                    </div>
+                    <div class="button-box">
+                        <button type="submit" disabled>Create Account</button>
+                        <p class="body-txt">Already have an account?<a href="#" target="_blank"> Log in</a></p>
+                    </div>
+            
+                </form>
+            </div>
+           
+        </div>
+</body>
+</html>
