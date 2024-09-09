@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Signup Form</title>
+    <title>Sign Up Form</title>
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}" />
+   <script src="{{ url_for('static', filename='js/other/form.js') }}" defer></script>
 </head>
 <body>
         <div class = "sidebar">
@@ -28,10 +29,10 @@
                     <div class = "columns">
                         <div class = "column-one">
                             <label for="first_name">First Name*</label>
-                            <input type="text" id="first_name" name="first_name" placeholder="John" value=""> 
+                            <input type="text" id="first_name" name="first_name" placeholder="John" value="" required> 
                             
                             <label for="email">Email*</label>
-                            <input type="email" id="email" name="email" placeholder="johnsmith@gmail.com" value=""> 
+                            <input type="email" id="email" name="email" placeholder="johnsmith@gmail.com" value="" required> 
                             
                             <label for="password">Password*</label>
                             <input type="password" id="password"
@@ -43,23 +44,23 @@
                         
                         <div class = "column-two">
                             <label for="last_name">Last Name*</label>
-                            <input type="text" id="last_name" name="last_name" placeholder="Smith" value=""> 
+                            <input type="text" id="last_name" name="last_name" placeholder="Smith" value="" required> 
                             
-                            <label for="phone_number">Phone Number*</label>
-                            <input id="phone_number" name="phone_number" placeholder="123-456-7890" pattern="^[0-9]{9}$" value=""> 
+                            <label for="phone_number">Phone Number</label>
+                            <input id="phone_number" name="phone_number" placeholder="123-456-7890" pattern="^[0-9._-]{9}$" value=""> 
                             
                             <label for="phone_number">Confirm Password*</label>
                             <input type="password" id="password_validation"
                             pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$"
-                            title="Password must contain min.8 characters: letters, digits and special characters."
+                            title="Password must contain min. 8 characters: letters, digits and one special character."
                             placeholder="********" required autocomplete="off">
-                            <!-- <p class="input-error">Passwords don't match.</p> -->
+                            <p class="input-error">Passwords don't match.</p>
                         </div>
                     </div>
                     </div>
                     <div class="button-box">
-                        <button type="submit" disabled>Create Account</button>
-                        <p class="body-txt">Already have an account?<a href="#" target="_blank"> Log in</a></p>
+                        <button id = "submit-button" type="submit" disabled>Create Account</button>
+                        <p class="body-txt">Already have an account?<a href="/login" target="/login"> Log in</a></p>
                     </div>
             
                 </form>

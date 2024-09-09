@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log In</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}" />
+   <!-- <script src="{{ url_for('static', filename='js/other/form.js') }}" defer></script> -->
+</head>
+<body>
+        <div class = "form-content">
+            <div class = "top-text">
+                <p> Log in and get started! </p> 
+                <p></p>
+            </div>
+            <div class = "middle-text">
+
+                <form action="" method="post">
+                    <div class = "white">
+
+                    <div class = "columns">
+                        <div class = "column-one">
+                            <label for="email">Email*</label>
+                            <input type="email" id="email" name="email" value="" required> 
+                            
+                            <label for="password">Password*</label>
+                            <input type="password" id="password"
+                            title="Password must contain min.8 characters: letters, digits and special characters."
+                           name="password"
+                            pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$" required
+                            autocomplete="off" minlength="8">
+                            
+                            <div class="button-box">
+                                <button id = "submit-button" type="submit" disabled>Log In</button>
+                                <p class="body-txt">Don't have an account? <a href="/register" target="/login">Sign Up</a></p>
+                            </div>
+                        </div>
+                        
+                      
+                    </div>
+                    </div>
+                   
+            
+                </form>
+            </div>
+           
+        </div>
+</body>
+</html>
