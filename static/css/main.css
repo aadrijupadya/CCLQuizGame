@@ -2691,3 +2691,7 @@ input, select, textarea {
 
 	}
 	
+.user-info {
+	display: flex;
+	gap: 20px;
+}

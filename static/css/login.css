@@ -97,6 +97,7 @@ button:active {
     box-shadow: 0 0 4px 1px rgba(34, 139, 34, 0.5); /* Slightly reduces the shadow */
 }
 
-.input-error {
+.error {
     color: red;
+    font-size: 1rem;
 };

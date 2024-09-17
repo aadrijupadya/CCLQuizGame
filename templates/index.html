@@ -20,6 +20,12 @@
 							</div>
 
 						<!-- Nav -->
+							{% if login %}
+                                <div class=user-info> 
+									<a>icon placeholder</a>
+									<p>Hello, </p> {username}
+								</div>
+                            {% endif %}
 							<nav id="nav">
 								<ul>
 									<li class="current"><a href="/">Home</a></li>

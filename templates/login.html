@@ -7,12 +7,15 @@
     <title>Log In</title>
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}" />
    <!-- <script src="{{ url_for('static', filename='js/other/form.js') }}" defer></script> -->
+
 </head>
 <body>
+    
         <div class = "form-content">
             <div class = "top-text">
                 <p> Log in and get started! </p> 
                 <p></p>
+
             </div>
             <div class = "middle-text">
 
@@ -22,18 +25,24 @@
                     <div class = "columns">
                         <div class = "column-one">
                             <label for="email">Email*</label>
-                            <input type="email" id="email" name="email" value="" required> 
-                            
+                            <!-- <input type="email" id="email" name="email" value="" required>  -->
+                            {{ form.hidden_tag() }}
+                            {{ form.username }}
                             <label for="password">Password*</label>
-                            <input type="password" id="password"
+                            {{form.password}}
+                            <!-- <input type="password" id="password"
                             title="Password must contain min.8 characters: letters, digits and special characters."
                            name="password"
                             pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$" required
-                            autocomplete="off" minlength="8">
+                            autocomplete="off" minlength="8"> -->
                             
                             <div class="button-box">
-                                <button id = "submit-button" type="submit" disabled>Log In</button>
+                                {{ form.submit }}
+                                <!-- <button id = "submit-button" type="submit" disabled>Log In</button> -->
                                 <p class="body-txt">Don't have an account? <a href="/register" target="/login">Sign Up</a></p>
+                                {% if error %}
+                                <p class=error><strong>Error:</strong> {{ error }}
+                            {% endif %}
                             </div>
                         </div>
                         

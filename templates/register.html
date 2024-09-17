@@ -28,39 +28,45 @@
 
                     <div class = "columns">
                         <div class = "column-one">
-                            <label for="first_name">First Name*</label>
-                            <input type="text" id="first_name" name="first_name" placeholder="John" value="" required> 
-                            
+                            <label for="first_name">First Name</label>
+                            <input type="text" id="first_name" name="first_name" placeholder="John" value=""> 
+                            {{ form.hidden_tag() }}
                             <label for="email">Email*</label>
-                            <input type="email" id="email" name="email" placeholder="johnsmith@gmail.com" value="" required> 
+                            {{ form.username }}
+                            <!-- <input type="email" id="email" name="email" placeholder="johnsmith@gmail.com" value="" required>  -->
                             
                             <label for="password">Password*</label>
-                            <input type="password" id="password"
+                            <!-- <input type="password" id="password"
                             title="Password must contain min.8 characters: letters, digits and special characters."
                             placeholder="********" name="password"
                             pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$" required
-                            autocomplete="off" minlength="8">
+                            autocomplete="off" minlength="8"> -->
+                            {{ form.password }}
                         </div>
                         
                         <div class = "column-two">
-                            <label for="last_name">Last Name*</label>
-                            <input type="text" id="last_name" name="last_name" placeholder="Smith" value="" required> 
+                            <label for="last_name">Last Name</label>
+                            <input type="text" id="last_name" name="last_name" placeholder="Smith" value=""> 
                             
                             <label for="phone_number">Phone Number</label>
                             <input id="phone_number" name="phone_number" placeholder="123-456-7890" pattern="^[0-9._-]{9}$" value=""> 
                             
-                            <label for="phone_number">Confirm Password*</label>
-                            <input type="password" id="password_validation"
-                            pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$"
-                            title="Password must contain min. 8 characters: letters, digits and one special character."
-                            placeholder="********" required autocomplete="off">
-                            <p class="input-error">Passwords don't match.</p>
+                            <label for="password_val">Confirm Password*</label>
+                            <!-- <input type="password" id="password_validation"
+                            title="Password must contain min. 8 characters:"
+                            placeholder="********" required autocomplete="off"> -->
+                            {{ form.password_val }}
+                            {% if error %}
+                                <p class="input-error">Passwords don't match.</p>
+                             {% endif %}
                         </div>
                     </div>
                     </div>
                     <div class="button-box">
-                        <button id = "submit-button" type="submit" disabled>Create Account</button>
-                        <p class="body-txt">Already have an account?<a href="/login" target="/login"> Log in</a></p>
+                        <!-- <button id = "submit-button" type="submit" disabled>Create Account</button> -->
+                        {{ form.submit }}
+                        <p class="body-txt">Already have an account? <a href="/login" target="/login">Log in</a> <p class ="body-text">Redirect to <a href="/" target="/">Home Page</a> </p> </p> 
+                
                     </div>
             
                 </form>
