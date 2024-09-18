@@ -3,8 +3,10 @@ from datetime import timedelta
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
+from wtforms import *
+from wtforms import StringField, PasswordField, SubmitField, EmailField
 from wtforms.validators import InputRequired, Length, ValidationError
+# from wtforms.fields.html5 import EmailField
 from flask_bcrypt import Bcrypt
 import os 
 
@@ -37,8 +39,8 @@ with app.app_context():
     db.create_all()
     
 class RegisterForm(FlaskForm):
-    username = StringField(validators= [InputRequired(), Length(min = 4, max = 20)],
-                           render_kw = {"placeholder": "Email"})
+    
+    username = EmailField(validators = [InputRequired()],  render_kw={"placeholder": "Password"})
     
     password = PasswordField(validators = [InputRequired(), Length(min = 8, max = 20)],
                              render_kw={"placeholder": "Password"})
@@ -88,7 +90,8 @@ def register():
             new_user = User(username = form.username.data, password = hashed_password)
             db.session.add(new_user)
             db.session.commit()
-            return render_template("index.html")
+            login = True
+            return render_template("index.html", username = form.username.data, login = login)
 
     return render_template('register.html', form = form, error = error)
     
@@ -103,7 +106,7 @@ def login():
                 login_user(user)
                 login = True
                 username = form.username.data
-                return render_template("index.html", username = username)
+                return render_template("index.html", username = username, login = login)
             else:
                  error = "Incorrect Password"
         else:
