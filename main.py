@@ -1,3 +1,4 @@
+
 from flask import Flask, render_template, request, url_for, redirect, session, flash, send_from_directory
 from datetime import timedelta
 from flask_sqlalchemy import SQLAlchemy
@@ -6,6 +7,8 @@ from flask_wtf import FlaskForm
 from wtforms import *
 from wtforms import StringField, PasswordField, SubmitField, EmailField
 from wtforms.validators import InputRequired, Length, ValidationError
+from flask import json
+from flask import jsonify
 from sqlalchemy import create_engine
 # from wtforms.fields.html5 import EmailField
 from flask_bcrypt import Bcrypt
@@ -17,6 +20,7 @@ app = Flask(__name__)
 app.secret_key = "cclquizgame"
 bcrypt = Bcrypt(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+
 app.config['SECRET_KEY'] = 'key'
 db = SQLAlchemy(app) 
 
@@ -26,7 +30,7 @@ login_manager.login_view = "login"
 
 login = None
 
-connection = sqlite3.connect("questions.db", check_same_thread=False)
+connection = sqlite3.connect("instance/questions.db", check_same_thread=False)
 cursor = connection.cursor()
 
 @login_manager.user_loader
@@ -59,6 +63,63 @@ class User(db.Model, UserMixin):
     quiz20score = db.Column(db.String())
     quiz21score = db.Column(db.String())
     quiz22score = db.Column(db.String())
+    
+# class Question(db.Model):
+#     QUESTION = db.Column(db.Text())
+#     QUESTIONTYPE = db.Column(db.Integer)
+#     ANSWERCHOICE1 = db.Column(db.Text())
+#     ANSWERCHOICE2 = db.Column(db.Text())
+#     ANSWERCHOICE3 = db.Column(db.Text())
+#     ANSWERCHOICE4 = db.Column(db.Text())
+#     CORRECTANSWER = db.Column(db.Text())
+#     CATEGORY = db.Column(db.Integer())
+def fetch_questions():
+    # Query adjusted to match the column names you provided
+    cursor.execute("""
+        SELECT QUESTION, QUESTIONTYPE, ANSWERCHOICE1, ANSWERCHOICE2, ANSWERCHOICE3, ANSWERCHOICE4, CORRECTANSWER, CATEGORY
+        FROM questions
+    """)
+    questions = cursor.fetchall()  # Fetch all questions as a list of tuples
+    return questions
+    
+@app.route('/get-questions')
+# Example server-side logic in app.py for /get-questions endpoint
+@app.route('/get-questions', methods=['GET'])
+def get_questions():
+    cursor.execute("SELECT QUESTION, QUESTIONTYPE, ANSWERCHOICE1, ANSWERCHOICE2, ANSWERCHOICE3, ANSWERCHOICE4, CORRECTANSWER FROM questions")
+    rows = cursor.fetchall()
+    questions = [] #array of question structs
+    
+    for row in rows:
+        question_text, question_type, choice1, choice2, choice3, choice4, correct_answer = row
+        
+        # Check if all answer choices are NULL (indicating a short-answer question)
+        if question_type == 2:
+            questions.append({
+                "question": question_text,
+                "questionType": "short",
+                "correct": correct_answer
+            })
+        # Check if it's a True/False question (only two options)
+        elif question_type == 1:  # Assuming question_type 1 means True/False
+            questions.append({
+                "question": question_text,
+                "questionType": "true_false",
+                "answers": ["True", "False"],
+                "correct": correct_answer
+            })
+        # Otherwise, it's a multiple-choice question
+        else:
+            questions.append({
+                "question": question_text,
+                "questionType": "multiple_choice",
+                "answers": [choice1, choice2, choice3, choice4],
+                "correct": correct_answer
+            })
+
+    return jsonify(questions)
+
+
 
 
 with app.app_context():
@@ -145,7 +206,7 @@ def login():
 
     return render_template("login.html", form = form, error = error)
 
-@app.route("/game", methods = ["GET", "POST"])
+@app.route('/game', methods=['GET', 'POST'])
 def game():
     return render_template("game.html")
 
