@@ -14,6 +14,7 @@ from sqlalchemy import create_engine
 from flask_bcrypt import Bcrypt
 import os 
 import sqlite3
+from sqlalchemy.orm import sessionmaker
 
 
 app = Flask(__name__)
@@ -29,9 +30,13 @@ login_manager.init_app(app)
 login_manager.login_view = "login"
 
 login = None
+username = None
 
 connection = sqlite3.connect("instance/questions.db", check_same_thread=False)
 cursor = connection.cursor()
+
+connection2 = sqlite3.connect("instance/database.db", check_same_thread = False)
+cursor2 = connection2.cursor()
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -41,28 +46,15 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), nullable=False, unique=True)
     password = db.Column(db.String(80), nullable=False)
-    quiz1score = db.Column(db.String())
-    quiz2score = db.Column(db.String())
-    quiz3score = db.Column(db.String())
-    quiz4score = db.Column(db.String())
-    quiz5score = db.Column(db.String())
-    quiz6score = db.Column(db.String())
-    quiz7score = db.Column(db.String())
-    quiz8score = db.Column(db.String())
-    quiz9score = db.Column(db.String())
-    quiz10score = db.Column(db.String())
-    quiz11score = db.Column(db.String())
-    quiz12score = db.Column(db.String())
-    quiz13score = db.Column(db.String())
-    quiz14score = db.Column(db.String())
-    quiz15score = db.Column(db.String())
-    quiz16score = db.Column(db.String())
-    quiz17score = db.Column(db.String())
-    quiz18score = db.Column(db.String())
-    quiz19score = db.Column(db.String())
-    quiz20score = db.Column(db.String())
-    quiz21score = db.Column(db.String())
-    quiz22score = db.Column(db.String())
+    quiz1score = db.Column(db.Integer)
+    quiz2score = db.Column(db.Integer)
+    quiz3score = db.Column(db.Integer)
+    quiz4score = db.Column(db.Integer)
+    quiz5score = db.Column(db.Integer)
+    quiz6score = db.Column(db.Integer)
+    quiz7score = db.Column(db.Integer)
+    quiz8score = db.Column(db.Integer)
+    quiz9score = db.Column(db.Integer)
     
 # class Question(db.Model):
 #     QUESTION = db.Column(db.Text())
@@ -84,38 +76,40 @@ def fetch_questions():
     
 @app.route('/get-questions')
 # Example server-side logic in app.py for /get-questions endpoint
-@app.route('/get-questions', methods=['GET'])
+@app.route('/get-questions', methods=['POST'])
 def get_questions():
-    cursor.execute("SELECT QUESTION, QUESTIONTYPE, ANSWERCHOICE1, ANSWERCHOICE2, ANSWERCHOICE3, ANSWERCHOICE4, CORRECTANSWER FROM questions")
+    cursor.execute("SELECT QUESTION, QUESTIONTYPE, ANSWERCHOICE1, ANSWERCHOICE2, ANSWERCHOICE3, ANSWERCHOICE4, CORRECTANSWER, CATEGORY FROM questions")
     rows = cursor.fetchall()
     questions = [] #array of question structs
-    
+    info = request.json
+    number = info["number"]
     for row in rows:
-        question_text, question_type, choice1, choice2, choice3, choice4, correct_answer = row
+        question_text, question_type, choice1, choice2, choice3, choice4, correct_answer, category = row
         
         # Check if all answer choices are NULL (indicating a short-answer question)
-        if question_type == 2:
-            questions.append({
-                "question": question_text,
-                "questionType": "short",
-                "correct": correct_answer
-            })
-        # Check if it's a True/False question (only two options)
-        elif question_type == 1:  # Assuming question_type 1 means True/False
-            questions.append({
-                "question": question_text,
-                "questionType": "true_false",
-                "answers": ["True", "False"],
-                "correct": correct_answer
-            })
-        # Otherwise, it's a multiple-choice question
-        else:
-            questions.append({
-                "question": question_text,
-                "questionType": "multiple_choice",
-                "answers": [choice1, choice2, choice3, choice4],
-                "correct": correct_answer
-            })
+        if number == category:
+            if question_type == 2:
+                questions.append({
+                    "question": question_text,
+                    "questionType": "short",
+                    "correct": correct_answer
+                })
+            # Check if it's a True/False question (only two options)
+            elif question_type == 1:  # Assuming question_type 1 means True/False
+                questions.append({
+                    "question": question_text,
+                    "questionType": "true_false",
+                    "answers": ["TRUE", "FALSE"],
+                    "correct": correct_answer
+                })
+            # Otherwise, it's a multiple-choice question
+            else:
+                questions.append({
+                    "question": question_text,
+                    "questionType": "multiple_choice",
+                    "answers": [choice1, choice2, choice3, choice4],
+                    "correct": correct_answer
+                })
 
     return jsonify(questions)
 
@@ -155,7 +149,10 @@ class LoginForm(FlaskForm):
 @app.route('/', methods = ['GET','POST'])
 
 def home():
-    return render_template('index.html')
+    if "login" in session and session["login"]:
+        return render_template('index.html', login = True, username = session["username"])
+    else:
+        return render_template('index.html', login = False)
     
 @app.route('/about', methods=['GET', 'POST'])
 @login_required
@@ -174,14 +171,12 @@ def register():
             error = True
         else:
             hashed_password = bcrypt.generate_password_hash(form.password.data)
-            new_user = User(username = form.username.data, password = hashed_password, quiz1score = 0, quiz2score = 0, quiz3score = 0, 
-                            quiz4score = 0, quiz5score = 0, quiz6score = 0, quiz7score = 0, quiz8score = 0, quiz9score = 0, quiz10score = 0,
-                            quiz11score = 0, quiz12score = 0, quiz13score = 0, quiz14score = 0, quiz15score = 0, quiz16score = 0, quiz17score = 0,
-                            quiz18score = 0, quiz19score = 0, quiz20score = 0, quiz21score = 0, quiz22score = 0)
+            new_user = User(username = form.username.data, password = hashed_password)
             db.session.add(new_user)
             db.session.commit()
-            login = True
-            return render_template("index.html", username = form.username.data, login = login)
+            session["username"] = form.username.data
+            session["login"] = True
+            return render_template("index.html", username = session["username"], login = session["login"])
 
     return render_template('register.html', form = form, error = error)
     
@@ -194,21 +189,72 @@ def login():
         if user:
             if bcrypt.check_password_hash(user.password, form.password.data):
                 login_user(user)
-                login = True
-                username = form.username.data
-                return render_template("index.html", username = username, login = login)
+                session["login"] = True
+                session["username"] = form.username.data
+                return render_template("index.html", username = session["username"], login = session["login"])
             else:
                  error = "Incorrect Password"
         else:
             error = "Username Not Found"
     # else:
     #     error = "Form did not submit, try again"
-
     return render_template("login.html", form = form, error = error)
 
 @app.route('/game', methods=['GET', 'POST'])
 def game():
-    return render_template("game.html")
+    if "username" in session:
+        return render_template("game.html", username = session["username"])
+    else:
+        return render_template("game.html")
+
+
+@app.route('/quizzes', methods= ['GET', 'POST'])
+def quizzes():
+    if "username" in session:
+        curr_user = User.query.filter_by(username = session["username"]).first()
+        return render_template("quizzes.html", login = True, username = session["username"], user = curr_user)
+    else:
+        return render_template("quizzes.html", login = False)
+@app.route('/uppdate_score')
+
+@app.route('/update_score', methods = ['POST'])
+def update_score():
+    req = request.json
+    score = int(req["score"])
+    quiznumber = int(req["number"])
+    username = session["username"]
+    curr_user = User.query.filter_by(username = session["username"]).first()
+    score2 = 0
+    if quiznumber == 1:
+        score2 = curr_user.quiz1score
+    elif quiznumber == 2:
+        score2 = curr_user.quiz2score
+    elif quiznumber == 3:
+        score2 = curr_user.quiz3score
+    elif quiznumber == 4:
+        score2 = curr_user.quiz4score
+    elif quiznumber == 5:
+        score2 = curr_user.quiz5score
+    elif quiznumber == 6:
+        score2 = curr_user.quiz6score
+    elif quiznumber == 7:
+        score2 = curr_user.quiz7score
+    elif quiznumber == 8:
+        score2 = curr_user.quiz8score
+    elif quiznumber == 9:
+        score2 = curr_user.quiz9score
+    if "username" in session:
+        qnum = 'quiz' + str(quiznumber) + "score"
+        if score2 is None or score > score2:
+            command = f'UPDATE user SET {qnum} = ? WHERE username = ?'
+            cursor2.execute(command, (score, username))
+            connection2.commit()
+    return "Worked"
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect("/")
 
 
 if __name__ == "__main__":
