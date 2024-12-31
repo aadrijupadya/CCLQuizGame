@@ -21,21 +21,26 @@
 
 						<!-- Nav -->
 							{% if login %}
-                                <div class=user-info> 
-									<a>icon placeholder</a>
-									<p>Welcome, {{username}}!</p>
-								</div>
-                            {% endif %}
 							<nav id="nav">
 								<ul>
 									<li class="current"><a href="/">Home</a></li>
-									<li><a href="/about">About CCL</a></li>
-									<li><a href="/game">Play!</a></li>
+									<li><a href="https://citizensclimatelobby.org/about-ccl/">About CCL</a></li>
+									<li><a href="/quizzes">Play!</a></li>
+									<li><a href="/login">{{username}}</a></li>
+									<li><a href="/logout">logout</a></li>
+								</ul>
+							</nav>
+							{% else %}
+							<nav id="nav">
+								<ul>
+									<li class="current"><a href="/">Home</a></li>
+									<li><a href="https://citizensclimatelobby.org/about-ccl/">About CCL</a></li>
+									<li><a href="/quizzes">Play!</a></li>
 									<li><a href="/register">Sign Up</a></li>
 									<li><a href="/login">Log In</a></li>
 								</ul>
 							</nav>
-
+                            {% endif %}
 					</header>
 				</div>
 
@@ -131,7 +136,7 @@
 								<!-- Content -->
 									<div id="content">
 										<section class="last">
-											<h2>Placeholder Title</h2>
+											<h2>Onboarding Quiz</h2>
 											<p>This is a game designed to be onboarding practice for the <strong>Climate Citizens' Lobby (CCL)</strong> Placeholder text 
 											<a href="about.html" class="button icon solid fa-arrow-circle-right">Learn More</a>
 										</section>
