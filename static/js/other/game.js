@@ -1,12 +1,37 @@
 let questions = [];
 let currentQuestionIndex = 0;
 let score = 0;
+let quiznumber = parseInt(localStorage.getItem('number'));
+
 
 async function fetchQuestions() {
-    const response = await fetch('/get-questions');
+    const response = await fetch('/get-questions', {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            number: quiznumber,
+        }),
+    });
     questions = await response.json();
     showQuestion(questions[currentQuestionIndex]);
 }
+
+async function updateScore(score) {
+    fetch('/update_score', {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            score: score,
+            number: quiznumber,
+        })
+    });
+    window.location = "/quizzes"
+}
+
 
 function showQuestion(question) {
     const questionElement = document.getElementById("question");
@@ -26,7 +51,7 @@ function showQuestion(question) {
         });
     } else if (question.questionType === "true_false") {
         // Display True/False buttons
-        ["True", "False"].forEach((answer) => {
+        ["TRUE", "FALSE"].forEach((answer) => {
             const button = document.createElement("button");
             button.innerText = answer;
             button.classList.add("btn");
@@ -106,9 +131,9 @@ document.getElementById("next-btn").addEventListener("click", () => {
         showQuestion(questions[currentQuestionIndex]);
     } else {
         alert(`Quiz finished! Your final score: ${score}/${questions.length}`);
-        currentQuestionIndex = 0;
-        score = 0;
-        fetchQuestions();
+        updateScore(score);
+        score = 0
+        currentQuestionIndex = 0
     }
 });
 

@@ -1,6 +1,8 @@
 :root {
-    --primary-color: black;
-    --secondary-color: gray;
+    --primary-color: #333;
+    --secondary-color: #555;
+    --highlight-color: forestgreen;
+    --error-color: red;
 }
 
 
@@ -45,6 +47,7 @@ html, body {
 .columns {
     display: flex;
     justify-content: center;
+    gap: 20px;
 
 }
 
@@ -59,6 +62,8 @@ input {
     padding: 10px;
     border-radius: 8px;
     border: 1px solid black;
+    width: 100%;
+    transition: border 0.3s ease, box-shadow 0.3s ease;
 }
 
 .column-one {
@@ -87,6 +92,11 @@ input {
     transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 
+#submit-button:hover {
+    background: darkgreen;
+    transform: scale(1.02); /* Slight enlargement on hover */
+}
+
 button:focus {
     outline: none;
     box-shadow: 0 0 8px 2px rgba(34, 139, 34, 0.5); /* Adds a green glow */
@@ -95,6 +105,26 @@ button:focus {
 button:active {
     background: darkgreen; /* Darkens the button color on click */
     box-shadow: 0 0 4px 1px rgba(34, 139, 34, 0.5); /* Slightly reduces the shadow */
+}
+
+
+@media (max-width: 480px) {
+    .white {
+        padding: 20px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Lighter shadow for small screens */
+    }
+
+    .form-header {
+        font-size: 1.5rem;
+    }
+
+    input {
+        font-size: 14px;
+    }
+
+    #submit-button {
+        font-size: 14px;
+    }
 }
 
 .error {
