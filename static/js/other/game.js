@@ -53,6 +53,8 @@ function showQuestion(question) {
     }
 }
 
+// Reset state each time we move on to next question
+
 function resetState() {
     const answerButtonsElement = document.getElementById("answer-buttons");
     document.getElementById("next-btn").classList.add("hide");
