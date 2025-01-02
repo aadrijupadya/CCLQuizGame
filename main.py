@@ -121,7 +121,7 @@ with app.app_context():
     
 class RegisterForm(FlaskForm):
     
-    username = EmailField(validators = [InputRequired()],  render_kw={"placeholder": "Username"})
+    username = StringField(validators = [InputRequired()],  render_kw={"placeholder": "Username"})
     
     password = PasswordField(validators = [InputRequired(), Length(min = 8, max = 20)],
                              render_kw={"placeholder": "Password"})
@@ -258,4 +258,4 @@ def logout():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
