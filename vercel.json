@@ -5,6 +5,17 @@
     ],
     "routes": [
         {"src": "/(.*)", "dest": "main.py"}
-    ]
-
+    ],
+    "env": {
+        "FLASK_ENV": "production",
+        "SECRET_KEY": "cclquizgame",
+        "DATABASE_URL": "sqlite:///instance/database.db",
+        "SQL_ALCHEMY_DATABASE_URI": "sqlite:///instance/database.db"
+    },
+    "build": {
+        "env": {
+            "FLASK_APP": "main.py",
+            "FLASK_ENV": "production"
+        }
+    }
 }
