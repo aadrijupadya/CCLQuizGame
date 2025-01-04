@@ -1,28 +1,27 @@
 {
-    "version": 2,
-    "builds": [
-      {
-        "src": "main.py",
-        "use": "@vercel/python"
-      }
-    ],
-    "routes": [
-      {
-        "src": "/(.*)",
-        "dest": "/main.py"
-      }
-    ],
-    "env": {
-      "FLASK_ENV": "production",
-      "SECRET_KEY": "cclquizgame",
-      "DATABASE_URL": "sqlite:///instance/database.db",
-      "SQLALCHEMY_DATABASE_URI": "sqlite:///instance/database.db"
+  "version": 2,
+  "builds": [
+    {
+      "src": "main.py",
+      "use": "@vercel/python"
     },
-    "build": {
-      "env": {
-        "FLASK_APP": "main.py",
-        "FLASK_ENV": "production"
-      }
+    {
+      "src": "requirements.txt",
+      "use": "@vercel/python"
     }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/main.py"
+    }
+  ],
+  "env": {
+    "FLASK_APP": "main.py",
+    "FLASK_ENV": "production",
+    "SQLALCHEMY_DATABASE_URI": "postgresql://postgres.ffmrkfsvruqhsdfppssl:Slimyforce89!@aws-0-us-west-1.pooler.supabase.com:6543/postgres",
+    "SECRET_KEY": "key"
   }
-  
+}
+
+
