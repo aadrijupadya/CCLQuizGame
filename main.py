@@ -14,7 +14,6 @@ from sqlalchemy import create_engine
 from sqlalchemy import text
 # from wtforms.fields.html5 import EmailField
 from flask_bcrypt import Bcrypt
-from supabase import create_client, Client
 import os 
 import sqlite3
 from sqlalchemy.orm import sessionmaker
