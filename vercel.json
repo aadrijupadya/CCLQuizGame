@@ -1,0 +1,28 @@
+{
+    "version": 2,
+    "builds": [
+      {
+        "src": "main.py",
+        "use": "@vercel/python"
+      }
+    ],
+    "routes": [
+      {
+        "src": "/(.*)",
+        "dest": "/main.py"
+      }
+    ],
+    "env": {
+      "FLASK_ENV": "production",
+      "SECRET_KEY": "cclquizgame",
+      "DATABASE_URL": "sqlite:///instance/database.db",
+      "SQLALCHEMY_DATABASE_URI": "sqlite:///instance/database.db"
+    },
+    "build": {
+      "env": {
+        "FLASK_APP": "main.py",
+        "FLASK_ENV": "production"
+      }
+    }
+  }
+  

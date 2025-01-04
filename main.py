@@ -1,5 +1,5 @@
 
-from flask import Flask, render_template, request, url_for, redirect, session, flash, send_from_directory
+from flask import Flask, render_template, request, url_for, redirect, session, flash, send_from_directory, request
 from datetime import timedelta
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
@@ -9,9 +9,12 @@ from wtforms import StringField, PasswordField, SubmitField, EmailField
 from wtforms.validators import InputRequired, Length, ValidationError
 from flask import json
 from flask import jsonify
+import pickle
 from sqlalchemy import create_engine
+from sqlalchemy import text
 # from wtforms.fields.html5 import EmailField
 from flask_bcrypt import Bcrypt
+from supabase import create_client, Client
 import os 
 import sqlite3
 from sqlalchemy.orm import sessionmaker
@@ -20,7 +23,9 @@ from sqlalchemy.orm import sessionmaker
 app = Flask(__name__)
 app.secret_key = "cclquizgame"
 bcrypt = Bcrypt(app)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+
+
+app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres.ffmrkfsvruqhsdfppssl:Slimyforce89!@aws-0-us-west-1.pooler.supabase.com:6543/postgres"
 
 app.config['SECRET_KEY'] = 'key'
 db = SQLAlchemy(app) 
@@ -29,14 +34,16 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
 
+# Client = create_client()
+
 login = None
 username = None
 
-connection = sqlite3.connect("instance/questions.db", check_same_thread=False)
-cursor = connection.cursor()
+# connection = sqlite3.connect("instance/questions.db", check_same_thread=False)
+# cursor = connection.cursor()
 
-connection2 = sqlite3.connect("instance/database.db", check_same_thread = False)
-cursor2 = connection2.cursor()
+# connection2 = sqlite3.connect("instance/database.db", check_same_thread = False)
+# cursor2 = connection2.cursor()
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -45,7 +52,7 @@ def load_user(user_id):
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), nullable=False, unique=True)
-    password = db.Column(db.String(80), nullable=False)
+    password = db.Column(db.Text, nullable=False)
     quiz1score = db.Column(db.Integer)
     quiz2score = db.Column(db.Integer)
     quiz3score = db.Column(db.Integer)
@@ -57,62 +64,76 @@ class User(db.Model, UserMixin):
     quiz9score = db.Column(db.Integer)
     
 # class Question(db.Model):
-#     QUESTION = db.Column(db.Text())
-#     QUESTIONTYPE = db.Column(db.Integer)
-#     ANSWERCHOICE1 = db.Column(db.Text())
-#     ANSWERCHOICE2 = db.Column(db.Text())
-#     ANSWERCHOICE3 = db.Column(db.Text())
-#     ANSWERCHOICE4 = db.Column(db.Text())
-#     CORRECTANSWER = db.Column(db.Text())
-#     CATEGORY = db.Column(db.Integer())
-def fetch_questions():
-    # Query adjusted to match the column names you provided
-    cursor.execute("""
-        SELECT QUESTION, QUESTIONTYPE, ANSWERCHOICE1, ANSWERCHOICE2, ANSWERCHOICE3, ANSWERCHOICE4, CORRECTANSWER, CATEGORY
-        FROM questions
-    """)
-    questions = cursor.fetchall()  # Fetch all questions as a list of tuples
-    return questions
+#     __tablename__ = 'questions'
+#     id = db.Column(db.Integer, primary_key=True)
+#     question = db.Column(db.Text, nullable=False)
+#     question_type = db.Column(db.Integer, nullable=False)
+#     answerchoice1 = db.Column(db.Text, nullable=True)
+#     answerchoice2 = db.Column(db.Text, nullable=True)
+#     answerchoice3 = db.Column(db.Text, nullable=True)
+#     answerchoice4 = db.Column(db.Text, nullable=True)
+#     correctanswer = db.Column(db.Text, nullable=False)
+#     category = db.Column(db.Integer, nullable=False)
+
+
+
     
-@app.route('/get-questions')
 # Example server-side logic in app.py for /get-questions endpoint
+@app.route('/get-questions')
+
 @app.route('/get-questions', methods=['POST'])
+
 def get_questions():
-    cursor.execute("SELECT QUESTION, QUESTIONTYPE, ANSWERCHOICE1, ANSWERCHOICE2, ANSWERCHOICE3, ANSWERCHOICE4, CORRECTANSWER, CATEGORY FROM questions")
-    rows = cursor.fetchall()
-    questions = [] #array of question structs
     info = request.json
-    number = info["number"]
+    number = info["number"]  # This corresponds to the category/quiz number
+    
+    # SQL query to fetch questions
+    query = text("""
+                 SELECT QUESTION, QUESTIONTYPE, ANSWERCHOICE1, ANSWERCHOICE2, ANSWERCHOICE3, ANSWERCHOICE4, CORRECTANSWER, CATEGORY FROM questions 
+                  WHERE CATEGORY = :category
+                 """)
+    
+    # Execute the query with the specified category
+    print(number)
+    result = db.session.execute(query, {"category": number})
+    rows = result.fetchall()
+    
+    # Prepare questions array
+    questions = []
     for row in rows:
         question_text, question_type, choice1, choice2, choice3, choice4, correct_answer, category = row
         
-        # Check if all answer choices are NULL (indicating a short-answer question)
-        if number == category:
-            if question_type == 2:
-                questions.append({
-                    "question": question_text,
-                    "questionType": "short",
-                    "correct": correct_answer
-                })
-            # Check if it's a True/False question (only two options)
-            elif question_type == 1:  # Assuming question_type 1 means True/False
-                questions.append({
-                    "question": question_text,
-                    "questionType": "true_false",
-                    "answers": ["TRUE", "FALSE"],
-                    "correct": correct_answer
-                })
-            # Otherwise, it's a multiple-choice question
-            else:
-                questions.append({
-                    "question": question_text,
-                    "questionType": "multiple_choice",
-                    "answers": [choice1, choice2, choice3, choice4],
-                    "correct": correct_answer
-                })
+        # Map the question to the correct format
+        if question_type == 2:  # Short-answer question
+            questions.append({
+                "question": question_text,
+                "questionType": "short",
+                "correct": correct_answer
+            })
+        elif question_type == 1:  # True/False question
+            questions.append({
+                "question": question_text,
+                "questionType": "true_false",
+                "answers": ["TRUE", "FALSE"],
+                "correct": correct_answer
+            })
+        else:  # Multiple-choice question
+            questions.append({
+                "question": question_text,
+                "questionType": "multiple_choice",
+                "answers": [choice1, choice2, choice3, choice4],
+                "correct": correct_answer
+            })
 
+    # Return questions as JSON
+    
+    
+    
     return jsonify(questions)
 
+    # except Exception as e:
+    #     print(f"Error fetching questions: {e}")
+    #     return jsonify({"error": "Failed to fetch questions"}), 500
 
 
 
@@ -170,7 +191,7 @@ def register():
             print(form.password.data)
             error = True
         else:
-            hashed_password = bcrypt.generate_password_hash(form.password.data)
+            hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
             new_user = User(username = form.username.data, password = hashed_password)
             db.session.add(new_user)
             db.session.commit()
@@ -218,38 +239,19 @@ def quizzes():
 @app.route('/uppdate_score')
 
 @app.route('/update_score', methods = ['POST'])
+@app.route('/update_score', methods=['POST'])
 def update_score():
-    req = request.json
-    score = int(req["score"])
-    quiznumber = int(req["number"])
-    username = session["username"]
-    curr_user = User.query.filter_by(username = session["username"]).first()
-    score2 = 0
-    if quiznumber == 1:
-        score2 = curr_user.quiz1score
-    elif quiznumber == 2:
-        score2 = curr_user.quiz2score
-    elif quiznumber == 3:
-        score2 = curr_user.quiz3score
-    elif quiznumber == 4:
-        score2 = curr_user.quiz4score
-    elif quiznumber == 5:
-        score2 = curr_user.quiz5score
-    elif quiznumber == 6:
-        score2 = curr_user.quiz6score
-    elif quiznumber == 7:
-        score2 = curr_user.quiz7score
-    elif quiznumber == 8:
-        score2 = curr_user.quiz8score
-    elif quiznumber == 9:
-        score2 = curr_user.quiz9score
-    if "username" in session:
-        qnum = 'quiz' + str(quiznumber) + "score"
-        if score2 is None or score > score2:
-            command = f'UPDATE user SET {qnum} = ? WHERE username = ?'
-            cursor2.execute(command, (score, username))
-            connection2.commit()
-    return "Worked"
+    data = request.get_json()
+    score = data.get('score')
+    quiz_number = data.get('number')
+
+    # Here you would handle saving the score to your database.
+    # Example for future use:
+    # new_score = Score(user_id=some_user_id, quiz_number=quiz_number, score=score)
+    # db.session.add(new_score)
+    # db.session.commit()
+
+    return jsonify({'status': 'success', 'message': 'Score updated successfully.'})
 
 @app.route('/logout')
 def logout():
