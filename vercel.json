@@ -4,10 +4,6 @@
     {
       "src": "main.py",
       "use": "@vercel/python"
-    },
-    {
-      "src": "requirements.txt",
-      "use": "@vercel/python"
     }
   ],
   "routes": [
@@ -19,9 +15,7 @@
   "env": {
     "FLASK_APP": "main.py",
     "FLASK_ENV": "production",
-    "SQLALCHEMY_DATABASE_URI": "postgresql://postgres.ffmrkfsvruqhsdfppssl:Slimyforce89!@aws-0-us-west-1.pooler.supabase.com:6543/postgres",
+    "SQLALCHEMY_DATABASE_URI": "postgresql://postgres:YOUR_PASSWORD@aws-0-us-west-1.pooler.supabase.com:6543/postgres",
     "SECRET_KEY": "key"
   }
 }
-
-
