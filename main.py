@@ -185,7 +185,11 @@ def register():
     form = RegisterForm()
 
     if form.validate_on_submit():
-        if (form.password_val.data != form.password.data):
+        curr_user = User.query.filter_by(username = form.username.data)
+        if curr_user:
+            print("Username taken")
+            error = True
+        elif (form.password_val.data != form.password.data):
             print(form.password_val.data)
             print(form.password.data)
             error = True
@@ -243,7 +247,43 @@ def update_score():
     data = request.get_json()
     score = data.get('score')
     quiz_number = data.get('number')
-
+    curr_user = User.query.filter_by(username = session["username"]).first()
+    if quiz_number == 1:
+        if curr_user.quiz1score == None or score > curr_user.quiz1score:
+            curr_user.quiz1score = score
+            db.session.commit()
+    elif quiz_number == 2:
+        if curr_user.quiz2score == None or score > curr_user.quiz2score:
+            curr_user.quiz2score = score
+            db.session.commit()
+    elif quiz_number == 3:
+        if curr_user.quiz3score == None or score > curr_user.quiz3score:
+            curr_user.quiz3score = score
+            db.session.commit()
+    elif quiz_number == 4:
+        if curr_user.quiz4score == None or score > curr_user.quiz4score:
+            curr_user.quiz4score = score
+            db.session.commit()
+    elif quiz_number == 5:
+        if curr_user.quiz5score == None or score > curr_user.quiz5score:
+            curr_user.quiz5score = score
+            db.session.commit()
+    elif quiz_number == 6:
+        if curr_user.quiz6score == None or score > curr_user.quiz6score:
+            curr_user.quiz6score = score
+            db.session.commit()
+    elif quiz_number == 7:
+        if curr_user.quiz7score == None or score > curr_user.quiz7score:
+            curr_user.quiz7score = score
+            db.session.commit()
+    elif quiz_number == 8:
+        if curr_user.quiz8score == None or score > curr_user.quiz8score:
+            curr_user.quiz8score = score
+            db.session.commit()
+    elif quiz_number == 9:
+        if curr_user.quiz9score == None or score > curr_user.quiz9score:
+            curr_user.quiz9score = score
+            db.session.commit()
     # Here you would handle saving the score to your database.
     # Example for future use:
     # new_score = Score(user_id=some_user_id, quiz_number=quiz_number, score=score)
