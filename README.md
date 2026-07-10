@@ -1,4 +1,4 @@
-# CCL Volunteer Training Quiz
+# CCL Quiz Game
 
 A quiz-based learning application designed to help Citizen Climate Lobby (CCL) volunteers practice key concepts, policies, and advocacy strategies.
 
